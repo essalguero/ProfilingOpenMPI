@@ -136,7 +136,8 @@ void esclavo(int argc, char** argv, int rank, int nproc)
 
 int main (int argc,char** argv)
 {
-
+	double init;
+	double end;
 
 	int rank;
 	int nproc;
@@ -146,10 +147,16 @@ int main (int argc,char** argv)
 	switch(rank)
 	{
 		case 0:
-			master(argc,argv,rank, nproc);
+			init = MPI_Wtime();
+			master(argc,argv,rank, nproc);			
+			end = MPI_Wtime();
+			printf("Ejecucion Master: %f", end - init);
 			break;
 		default:
+			init = MPI_Wtime();
 			esclavo(argc,argv,rank, nproc);
+			end = MPI_Wtime();
+			printf("Ejecucion Esclavo: %f", end - init);
 			break;
 	};
 	MPI_Finalize();

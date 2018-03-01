@@ -1,0 +1,14 @@
+
+
+Tiempo copiando los datos desde cpu a device es 66.30337 ms
+
+Tiempo copiando los datos de GPU a CPU es de 203,61352ms
+
+Tiempo de ejecucion del kernel es de 9,43799ms
+
+
+La reserva de memoria en la GPU tiene un tiempo de 468.25772ms
+
+Tiempo total de ejecucion es de 1,03778s
+
+
