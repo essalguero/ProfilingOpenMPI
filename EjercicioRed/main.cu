@@ -14,6 +14,9 @@
 void master(int argc, char** argv, int rank, int nproc)
 {
 
+	double init;
+	double end;
+
 	int numFilas=1000;
 	int numColumnas=1000;
 
@@ -36,7 +39,9 @@ void master(int argc, char** argv, int rank, int nproc)
 	int ack=0;
 	for(int slave=1;slave<nproc;slave++)
 	{
-
+		
+		init = MPI_Wtime();
+		
 		if((slave-1)==resto) subMatrizFilas --;
 		MPI_Send(&subMatrizFilas,1,MPI_INT,slave,
 			TAG_DATO,MPI_COMM_WORLD);
@@ -53,6 +58,10 @@ void master(int argc, char** argv, int rank, int nproc)
 				TAG_OPERACION,MPI_COMM_WORLD);
 		MPI_Recv(&(ack),1,MPI_INT,slave,
 				TAG_DATO,MPI_COMM_WORLD,&status);
+
+		end = MPI_Wtime();
+
+		printf("Ejecucion Master - Tiempo envio datos a esclavo %d: %f\n", slave, end - init);
 	}
 
 	subMatrizFilas++;
@@ -62,10 +71,17 @@ void master(int argc, char** argv, int rank, int nproc)
 
 		if((slave-1)==resto) subMatrizFilas --;
 
+		init = MPI_Wtime();
+
 		MPI_Recv(&(matRes[indexCount]),subMatrizFilas*numColumnas,MPI_INT,slave,
 				TAG_DATO,MPI_COMM_WORLD,&status);
 		MPI_Send(&ack,1,MPI_INT,slave,
 				TAG_DATO,MPI_COMM_WORLD);		
+
+		end = MPI_Wtime();
+
+		printf("Ejecucion Master - Tiempo recepcion datos desde esclavo %d: %f\n", slave, end - init);
+
 		indexCount+=subMatrizFilas*numColumnas;
 	}
 
@@ -74,6 +90,9 @@ void master(int argc, char** argv, int rank, int nproc)
 
 void esclavo(int argc, char** argv, int rank, int nproc)
 {
+
+	double init;
+	double end;
 
 		int operacion=0;
 		int numFilasM1=0;
@@ -89,6 +108,9 @@ void esclavo(int argc, char** argv, int rank, int nproc)
 		if(argc>=2) cpu=atoi(argv[1]);
 
 		MPI_Status status;
+
+		init = MPI_Wtime();
+
 		MPI_Recv(&numFilasM1,1,MPI_INT,0,
 			TAG_DATO,MPI_COMM_WORLD,&status);
 		MPI_Recv(&numColumnasM1,1,MPI_INT,0,
@@ -106,6 +128,10 @@ void esclavo(int argc, char** argv, int rank, int nproc)
 				TAG_DATO,MPI_COMM_WORLD,&status);
 		MPI_Recv(&operacion,1,MPI_INT,0,
 				TAG_OPERACION,MPI_COMM_WORLD,&status);
+		
+		end = MPI_Wtime();
+		printf("Ejecucion Esclavo - Tiempo recepcion datos esclavo %d: %f\n", nproc, end - init);
+
 		MPI_Send(&ack,1,MPI_INT,0,
 				TAG_DATO,MPI_COMM_WORLD);
 
@@ -125,13 +151,15 @@ void esclavo(int argc, char** argv, int rank, int nproc)
 			break;
 		};
 
-		
+		init = MPI_Wtime();
+
 		MPI_Send(matRes,numFilasM1*numColumnasM2,MPI_INT,0,
 				TAG_DATO,MPI_COMM_WORLD);
 		MPI_Recv(&ack,1,MPI_INT,0,
 				TAG_DATO,MPI_COMM_WORLD,&status);
+		end = MPI_Wtime();
 
-		
+		printf("Ejecucion Esclavo - Envio resultado esclavo %d: %f\n", nproc, end - init);
 }
 
 int main (int argc,char** argv)
@@ -150,13 +178,13 @@ int main (int argc,char** argv)
 			init = MPI_Wtime();
 			master(argc,argv,rank, nproc);			
 			end = MPI_Wtime();
-			printf("Ejecucion Master: %f", end - init);
+			printf("Ejecucion Master: %f\n", end - init);
 			break;
 		default:
 			init = MPI_Wtime();
 			esclavo(argc,argv,rank, nproc);
 			end = MPI_Wtime();
-			printf("Ejecucion Esclavo: %f", end - init);
+			printf("Ejecucion Esclavo %d: %f\n", nproc, end - init);
 			break;
 	};
 	MPI_Finalize();
