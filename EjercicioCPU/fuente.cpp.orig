@@ -6,11 +6,8 @@ void pruebamalloc(int y)
 {
 
 	int* x=(int*)malloc(10*sizeof(int));
-	//x[1000]=5;
-	x[9]=5;
+	x[1000]=5;
 
-	// Añadido para evitar memory leak
-	free(x);
 }
 
 int fun3(int x)
