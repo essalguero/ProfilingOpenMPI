@@ -130,7 +130,7 @@ void esclavo(int argc, char** argv, int rank, int nproc)
 				TAG_OPERACION,MPI_COMM_WORLD,&status);
 		
 		end = MPI_Wtime();
-		printf("Ejecucion Esclavo - Tiempo recepcion datos esclavo %d: %f\n", nproc, end - init);
+		printf("Ejecucion Esclavo %d - Tiempo recepcion datos desde Master: %f\n", rank, end - init);
 
 		MPI_Send(&ack,1,MPI_INT,0,
 				TAG_DATO,MPI_COMM_WORLD);
@@ -159,35 +159,47 @@ void esclavo(int argc, char** argv, int rank, int nproc)
 				TAG_DATO,MPI_COMM_WORLD,&status);
 		end = MPI_Wtime();
 
-		printf("Ejecucion Esclavo - Envio resultado esclavo %d: %f\n", nproc, end - init);
+		printf("Ejecucion Esclavo %d - Envio resultado a Master: %f\n", rank, end - init);
 }
 
 int main (int argc,char** argv)
 {
-	double init;
-	double end;
 
 	int rank;
 	int nproc;
+
 	MPI_Init(&argc,&argv);
 	MPI_Comm_size(MPI_COMM_WORLD,&nproc);
 	MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+
+	double init[nproc];
+	double end[nproc];
+
 	switch(rank)
 	{
 		case 0:
-			init = MPI_Wtime();
+			printf("\n\nInicio programa\n\n");
+
+			init[rank] = MPI_Wtime();
 			master(argc,argv,rank, nproc);			
-			end = MPI_Wtime();
-			printf("Ejecucion Master: %f\n", end - init);
+			end[rank] = MPI_Wtime();
+			printf("Ejecucion Master: %f\n", end[rank] - init[rank]);
+
+			
+			printf("\n\nFin programa\n\n");
+
 			break;
 		default:
-			init = MPI_Wtime();
+			init[rank] = MPI_Wtime();
 			esclavo(argc,argv,rank, nproc);
-			end = MPI_Wtime();
-			printf("Ejecucion Esclavo %d: %f\n", nproc, end - init);
+			end[rank] = MPI_Wtime();
+			printf("Ejecucion Esclavo %d: %f\n", rank, end[rank] - init[rank]);
 			break;
 	};
+
+
 	MPI_Finalize();
+
 	return 0;
 
 }

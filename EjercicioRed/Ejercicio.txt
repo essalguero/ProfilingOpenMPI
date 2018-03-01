@@ -1,0 +1,25 @@
+Ejemplo de ejecucion de la aplicacion:
+
+Ejecucion Esclavo 1 - Tiempo recepcion datos desde Master: 0.051662
+CPU!
+Ejecucion Master - Tiempo envio datos a esclavo 1: 0.046699
+Ejecucion Esclavo 2 - Tiempo recepcion datos desde Master: 0.098608
+CPU!
+Ejecucion Master - Tiempo envio datos a esclavo 2: 0.046651
+Ejecucion Esclavo 3 - Tiempo recepcion datos desde Master: 0.145084
+CPU!
+Ejecucion Master - Tiempo envio datos a esclavo 3: 0.046573
+Ejecucion Esclavo 1 - Envio resultado a Master: 0.011948
+Ejecucion Esclavo 1: 0.870442
+Ejecucion Master - Tiempo recepcion datos desde esclavo 1: 0.725127
+Ejecucion Esclavo 2 - Envio resultado a Master: 0.011901
+Ejecucion Esclavo 2: 0.913046
+Ejecucion Master - Tiempo recepcion datos desde esclavo 2: 0.042534
+Ejecucion Esclavo 3 - Envio resultado a Master: 0.011879
+Ejecucion Esclavo 3: 0.955313
+Ejecucion Master - Tiempo recepcion datos desde esclavo 3: 0.042372
+Ejecucion Master: 0.955265
+
+
+
+
