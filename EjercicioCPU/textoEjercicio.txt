@@ -1,0 +1,124 @@
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ gcc -g -pg fuente.cpp -o fuente
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ ./fuenteestudiante@utwks0383:~/Escritorio/ProfilingOpestudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ 
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ gprof ./fuente gmon.out > estadisticas.txt
+
+
+
+
+La función que más tiempo se ejecuta es:
+
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+101.03      0.21     0.21  1001000     0.00     0.00  fun3(int)
+
+
+
+Ejecución usando valgrind Memcheck
+
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ valgrind ./fuente -Memcheck
+==3093== Memcheck, a memory error detector
+==3093== Copyright (C) 2002-2015, and GNU GPL'd, by Julian Seward et al.
+==3093== Using Valgrind-3.11.0 and LibVEX; rerun with -h for copyright info
+==3093== Command: ./fuente -Memcheck
+==3093== 
+==3093== 
+==3093== Process terminating with default action of signal 27 (SIGPROF)
+==3093==    at 0x4F42E0F: write_gmon (gmon.c:354)
+==3093==    by 0x4F43589: _mcleanup (gmon.c:422)
+==3093==    by 0x4E73FF7: __run_exit_handlers (exit.c:82)
+==3093==    by 0x4E74044: exit (exit.c:104)
+==3093==    by 0x4E5A836: (below main) (libc-start.c:325)
+==3093== 
+==3093== HEAP SUMMARY:
+==3093==     in use at exit: 40,041,980 bytes in 1,001,001 blocks
+==3093==   total heap usage: 1,001,001 allocs, 0 frees, 40,041,980 bytes allocated
+==3093== 
+==3093== LEAK SUMMARY:
+==3093==    definitely lost: 40,040,000 bytes in 1,001,000 blocks
+==3093==    indirectly lost: 0 bytes in 0 blocks
+==3093==      possibly lost: 0 bytes in 0 blocks
+==3093==    still reachable: 1,980 bytes in 1 blocks
+==3093==         suppressed: 0 bytes in 0 blocks
+==3093== Rerun with --leak-check=full to see details of leaked memory
+==3093== 
+==3093== For counts of detected and suppressed errors, rerun with: -v
+==3093== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+El tiempo de CPU expiró
+
+
+Se puede ver que no se hace free de la reserva dinámica del array x en la funcion pruebamalloc
+
+void pruebamalloc(int y)
+{
+
+	int* x=(int*)malloc(10*sizeof(int));
+	//x[1000]=5;
+	x[9]=5;
+
+}
+
+
+Habría que añadir una sentencia free para liberar la memoria
+
+void pruebamalloc(int y)
+{
+
+	int* x=(int*)malloc(10*sizeof(int));
+	//x[1000]=5;
+	x[9]=5;
+
+	// Añadido para evitar memory leaks
+	free(x);
+}
+
+
+Después de este cambio se puede compilar el programa y realizar la ejecución de nuevo:
+
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ gcc -g -pg fuente.cpp -o fuente
+estudiante@utwks0383:~/Escritorio/ProfilingOpenMPI/EjercicioCPU$ valgrind ./fuente -Memcheck
+==3093== Memcheck, a memory error detector
+==3093== Copyright (C) 2002-2015, and GNU GPL'd, by Julian Seward et al.
+==3093== Using Valgrind-3.11.0 and LibVEX; rerun with -h for copyright info
+==3093== Command: ./fuente -Memcheck
+==3093== 
+==3093== 
+==3093== Process terminating with default action of signal 27 (SIGPROF)
+==3093==    at 0x4F42E0F: write_gmon (gmon.c:354)
+==3093==    by 0x4F43589: _mcleanup (gmon.c:422)
+==3093==    by 0x4E73FF7: __run_exit_handlers (exit.c:82)
+==3093==    by 0x4E74044: exit (exit.c:104)
+==3093==    by 0x4E5A836: (below main) (libc-start.c:325)
+==3093== 
+==3093== HEAP SUMMARY:
+==3093==     in use at exit: 40,041,980 bytes in 1,001,001 blocks
+==3093==   total heap usage: 1,001,001 allocs, 0 frees, 40,041,980 bytes allocated
+==3093== 
+==3093== LEAK SUMMARY:
+==3093==    definitely lost: 40,040,000 bytes in 1,001,000 blocks
+==3093==    indirectly lost: 0 bytes in 0 blocks
+==3093==      possibly lost: 0 bytes in 0 blocks
+==3093==    still reachable: 1,980 bytes in 1 blocks
+==3093==         suppressed: 0 bytes in 0 blocks
+==3093== Rerun with --leak-check=full to see details of leaked memory
+==3093== 
+==3093== For counts of detected and suppressed errors, rerun with: -v
+==3093== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+El tiempo de CPU expiró
+

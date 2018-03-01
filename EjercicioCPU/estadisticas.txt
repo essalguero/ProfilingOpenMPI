@@ -2,11 +2,11 @@ Flat profile:
 
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
- time   seconds   seconds    calls  ms/call  ms/call  name    
-101.03      0.21     0.21  1001000     0.00     0.00  fun3(int)
-  0.00      0.21     0.00  1001000     0.00     0.00  pruebamalloc(int)
-  0.00      0.21     0.00     1000     0.00     0.21  fun2(int)
-  0.00      0.21     0.00        1     0.00   212.16  fun1(int)
+ time   seconds   seconds    calls  us/call  us/call  name    
+101.03      0.21     0.21     1000   212.16   212.16  pruebamalloc(int)
+  0.00      0.21     0.00  1001000     0.00     0.00  __do_global_dtors_aux
+  0.00      0.21     0.00  1001000     0.00     0.00  frame_dummy
+  0.00      0.21     0.00        1     0.00     0.00  fun3(int)
 
  %         the percentage of the total running time of the
 time       program used by this function.
@@ -47,26 +47,25 @@ notice and this notice are preserved.
 granularity: each sample hit covers 2 byte(s) for 4.71% of 0.21 seconds
 
 index % time    self  children    called     name
+                0.21    0.00    1000/1000        fun2(int) [2]
+[1]    100.0    0.21    0.00    1000         pruebamalloc(int) [1]
+                0.00    0.00 1001000/1001000     __do_global_dtors_aux [10]
+-----------------------------------------------
                                                  <spontaneous>
-[1]    100.0    0.00    0.21                 main [1]
-                0.00    0.21       1/1           fun1(int) [2]
+[2]    100.0    0.00    0.21                 fun2(int) [2]
+                0.21    0.00    1000/1000        pruebamalloc(int) [1]
+                0.00    0.00    1000/1001000     frame_dummy [3]
 -----------------------------------------------
-                0.00    0.21       1/1           main [1]
-[2]    100.0    0.00    0.21       1         fun1(int) [2]
-                0.00    0.21    1000/1000        fun2(int) [4]
-                0.00    0.00    1000/1001000     fun3(int) [3]
+                0.00    0.00    1000/1001000     fun2(int) [2]
+                0.00    0.00 1000000/1001000     fun3(int) [11]
+[3]      0.0    0.00    0.00 1001000         frame_dummy [3]
 -----------------------------------------------
-                0.00    0.00    1000/1001000     fun1(int) [2]
-                0.21    0.00 1000000/1001000     fun2(int) [4]
-[3]    100.0    0.21    0.00 1001000         fun3(int) [3]
-                0.00    0.00 1001000/1001000     pruebamalloc(int) [11]
+                0.00    0.00 1001000/1001000     pruebamalloc(int) [1]
+[10]     0.0    0.00    0.00 1001000         __do_global_dtors_aux [10]
 -----------------------------------------------
-                0.00    0.21    1000/1000        fun1(int) [2]
-[4]     99.9    0.00    0.21    1000         fun2(int) [4]
-                0.21    0.00 1000000/1001000     fun3(int) [3]
------------------------------------------------
-                0.00    0.00 1001000/1001000     fun3(int) [3]
-[11]     0.0    0.00    0.00 1001000         pruebamalloc(int) [11]
+                0.00    0.00       1/1           fun1(int) [12]
+[11]     0.0    0.00    0.00       1         fun3(int) [11]
+                0.00    0.00 1000000/1001000     frame_dummy [3]
 -----------------------------------------------
 
  This table describes the call tree of the program, and was sorted by
@@ -159,5 +158,5 @@ notice and this notice are preserved.
 
 Index by function name
 
-  [11] pruebamalloc(int)       [4] fun2(int)
-   [2] fun1(int)               [3] fun3(int)
+   [1] pruebamalloc(int)      [10] __do_global_dtors_aux
+  [11] fun3(int)               [3] frame_dummy
